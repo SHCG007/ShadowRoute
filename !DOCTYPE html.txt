@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShadowRoute | Urban Heat Planner</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root {
+  --green: #174d35;
+  --green2: #26734d;
+  --light: #eaf4ec;
+  --orange: #f0a33a;
+  --red: #d94b45;
+  --text: #24352b;
+  --muted: #718078;
+  --white: #ffffff;
+  --border: #e1eae3;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f8f5;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+header {
+  background: var(--green);
+  color: white;
+  padding: 18px 7%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.logo span {
+  color: #a9dfb8;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+nav a:hover {
+  color: #b9e7c5;
+}
+
+.hero {
+  padding: 55px 7%;
+  background: linear-gradient(120deg, #e4f2e7, #f8fbf8);
+}
+
+.hero h1 {
+  font-size: clamp(30px, 5vw, 44px);
+  color: var(--green);
+  max-width: 700px;
+  line-height: 1.2;
+  margin-bottom: 15px;
+}
+
+.hero p {
+  color: #586a60;
+  max-width: 650px;
+  margin-bottom: 22px;
+}
+
+.btn {
+  display: inline-block;
+  background: var(--green2);
+  color: white;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn:hover {
+  background: var(--green);
+}
+
+main {
+  padding: 30px 7% 60px;
+}
+
+.section {
+  margin-bottom: 42px;
+  scroll-margin-top: 20px;
+}
+
+.section-heading {
+  margin-bottom: 18px;
+}
+
+.section-heading h2 {
+  color: var(--green);
+  font-size: 25px;
+}
+
+.section-heading p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 18px;
+}
+
+.card {
+  background: white;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  box-shadow: 0 3px 12px rgba(20, 60, 35, 0.04);
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.stat-number {
+  font-size: 30px;
+  font-weight: bold;
+  color: var(--green);
+  margin: 7px 0;
+}
+
+.stat-note {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.two-columns {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 20px;
+}
+
+.map-frame {
+  width: 100%;
+  height: 350px;
+  border: 0;
+  border-radius: 10px;
+  margin-top: 12px;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 300px;
+  margin-top: 15px;
+}
+
+.notice {
+  background: #fff6e8;
+  border-left: 4px solid var(--orange);
+  padding: 14px;
+  border-radius: 7px;
+  color: #77551f;
+  font-size: 13px;
+  margin-top: 15px;
+}
+
+.calculator {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-top: 18px;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 7px;
+}
+
+.field input {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 15px;
+}
+
+.result {
+  background: var(--light);
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.result h3 {
+  color: var(--green);
+  font-size: 28px;
+}
+
+.result p {
+  color: #53665a;
+  font-size: 14px;
+}
+
+.solution-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 18px;
+}
+
+.solution-card {
+  background: white;
+  border: 1px solid var(--border);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.solution-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.solution-card h3 {
+  color: var(--green);
+  margin-bottom: 8px;
+}
+
+.solution-card p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.report-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+footer {
+  background: var(--green);
+  color: #e4f1e7;
+  text-align: center;
+  padding: 25px 7%;
+  font-size: 13px;
+}
+
+footer p + p {
+  margin-top: 6px;
+}
+
+@media(max-width: 750px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .two-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 40px 6%;
+  }
+
+  main {
+    padding-left: 6%;
+    padding-right: 6%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">🌿 Shadow<span>Route</span></div>
+
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#map">Map</a>
+    <a href="#priority">Priority</a>
+    <a href="#solutions">Solutions</a>
+    <a href="#reports">Reports</a>
+  </nav>
+</header>
+
+<section class="hero" id="home">
+  <h1>Plan Cooler, Greener Urban Streets</h1>
+  <p>
+    ShadowRoute helps identify areas that may need more shade
+    and suggests practical cooling interventions for healthier
+    and more comfortable urban spaces.
+  </p>
+  <a href="#dashboard" class="btn">Explore Dashboard →</a>
+</section>
+
+<main>
+
+<!-- DASHBOARD -->
+<section class="section" id="dashboard">
+  <div class="section-heading">
+    <h2>Urban Heat Dashboard</h2>
+    <p>Illustrative project indicators — not live measurements.</p>
+  </div>
+
+  <div class="stats">
+    <div class="card">
+      <div class="stat-label">Sample Areas Analysed</div>
+      <div class="stat-number">5</div>
+      <div class="stat-note">Example locations</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">High Heat-Risk Areas</div>
+      <div class="stat-number">2</div>
+      <div class="stat-note">Illustrative classification</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">Average Sample Heat</div>
+      <div class="stat-number">39°C</div>
+      <div class="stat-note">Example temperature values</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">Suggested Interventions</div>
+      <div class="stat-number">8</div>
+      <div class="stat-note">Example planning ideas</div>
+    </div>
+  </div>
+</section>
+
+<!-- MAP -->
+<section class="section" id="map">
+  <div class="section-heading">
+    <h2>Urban Area Map</h2>
+    <p>Map preview centered around Vijayawada.</p>
+  </div>
+
+  <div class="card">
+    <iframe
+      class="map-frame"
+      title="OpenStreetMap preview of Vijayawada"
+      src="https://www.openstreetmap.org/export/embed.html?bbox=80.55%2C16.48%2C80.70%2C16.58&layer=mapnik">
+    </iframe>
+
+    <p class="stat-note">
+      This is a general map preview. It does not display measured
+      heat zones or verified shade coverage.
+    </p>
+  </div>
+</section>
+
+<!-- CHARTS -->
+<section class="section">
+  <div class="section-heading">
+    <h2>Heat Analysis</h2>
+    <p>Compare example temperatures across sample urban areas.</p>
+  </div>
+
+  <div class="two-columns">
+    <div class="card">
+      <h3>Sample Temperature Comparison</h3>
+      <div class="chart-wrap">
+        <canvas id="heatChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Sample Shade Coverage</h3>
+      <div class="chart-wrap">
+        <canvas id="shadeChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice">
+    Demo data only: these values are invented for demonstrating
+    the website. Replace them with reliable local data before
+    making real planning recommendations.
+  </div>
+</section>
+
+<!-- PRIORITY -->
+<section class="section" id="priority">
+  <div class="section-heading">
+    <h2>Area Priority Calculator</h2>
+    <p>
+      Estimate which areas may need attention using four planning factors.
+    </p>
+  </div>
+
+  <div class="card">
+    <p class="stat-note">
+      Enter values from 0 to 100. Higher values mean greater concern
+      or need for intervention.
+    </p>
+
+    <div class="calculator">
+      <div class="field">
+        <label for="heat">Heat Risk (40%)</label>
+        <input id="heat" type="number" min="0" max="100" value="80">
+      </div>
+
+      <div class="field">
+        <label for="shade">Lack of Shade (30%)</label>
+        <input id="shade" type="number" min="0" max="100" value="70">
+      </div>
+
+      <div class="field">
+        <label for="usage">Public Usage (20%)</label>
+        <input id="usage" type="number" min="0" max="100" value="60">
+      </div>
+
+      <div class="field">
+        <label for="vulnerable">Vulnerable Locations (10%)</label>
+        <input id="vulnerable" type="number" min="0" max="100" value="90">
+      </div>
+    </div>
+
+    <button class="btn" onclick="calculatePriority()" style="margin-top:20px">
+      Calculate Priority
+    </button>
+
+    <div class="result" id="result" aria-live="polite">
+      <h3>79 / 100</h3>
+      <p>High Priority — consider investigating this area.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTIONS -->
+<section class="section" id="solutions">
+  <div class="section-heading">
+    <h2>Recommended Cooling Solutions</h2>
+    <p>Possible interventions for reducing urban heat exposure.</p>
+  </div>
+
+  <div class="solution-grid">
+    <div class="solution-card">
+      <div class="solution-icon">🌳</div>
+      <h3>Plant More Trees</h3>
+      <p>
+        Increase tree cover along suitable roads, footpaths,
+        and public spaces.
+      </p>
+    </div>
+
+    <div class="solution-card">
+      <div class="solution-icon">🏡</div>
+      <h3>Install Shade Structures</h3>
+      <p>
+        Consider shaded bus stops, waiting areas, and pedestrian shelters.
+      </p>
+    </div>
+
+    <div class="solution-card">
+      <div class="solution-icon">🌱</div>
+      <h3>Create Green Spaces</h3>
+      <p>
+        Explore pocket parks and planted spaces where suitable.
+      </p>
+    </div>
+
+    <div class="solution-card">
+      <div class="solution-icon">🚶</div>
+      <h3>Improve Walking Routes</h3>
+      <p>
+        Connect useful destinations with comfortable, shaded walking paths.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- REPORTS -->
+<section class="section" id="reports">
+  <div class="section-heading">
+    <h2>Project Reports</h2>
+    <p>Export the example planning information.</p>
+  </div>
+
+  <div class="card">
+    <h3>Download ShadowRoute Report</h3>
+    <p class="stat-note">
+      Generate a text report containing the sample dashboard
+      values and priority calculation.
+    </p>
+
+    <div class="report-buttons">
+      <button class="btn" onclick="downloadReport()">
+        Download TXT Report
+      </button>
+
+      <button class="btn" onclick="downloadCSV()">
+        Download CSV Data
+      </button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p><strong>🌿 ShadowRoute</strong> — Urban Heat and Shade-Corridor Planner</p>
+  <p>Student Hackathon Project | Demonstration Version</p>
+  <p>All displayed analysis values are illustrative demo data.</p>
+</footer>
+
+<script>
+// SAMPLE DATA — replace with verified local data when available.
+
+const areas = ["MG Road", "Bus Stand", "Benz Circle", "Ramesh Hospital", "Market Street"];
+const temperatures = [42, 39, 36, 41, 37];
+const shadeCoverage = [20, 35, 55, 25, 45];
+
+new Chart(document.getElementById("heatChart"), {
+  type: "bar",
+  data: {
+    labels: areas,
+    datasets: [{
+      label: "Temperature (°C)",
+      data: temperatures,
+      backgroundColor: "#26734d",
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { beginAtZero: false }
+    }
+  }
+});
+
+new Chart(document.getElementById("shadeChart"), {
+  type: "bar",
+  data: {
+    labels: areas,
+    datasets: [{
+      label: "Shade Coverage (%)",
+      data: shadeCoverage,
+      backgroundColor: "#8bc69a",
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 100
+      }
+    }
+  }
+});
+
+// FOUR-FACTOR PRIORITY CALCULATION
+
+function calculatePriority() {
+  const fields = ["heat", "shade", "usage", "vulnerable"];
+  const values = fields.map(id =>
+    Number(document.getElementById(id).value)
+  );
+
+  const result = document.getElementById("result");
+
+  const valid = values.every(value =>
+    Number.isFinite(value) && value >= 0 && value <= 100
+  );
+
+  if (!valid) {
+    result.innerHTML =
+      "<h3>Invalid input</h3><p>Enter a number from 0 to 100 in every field.</p>";
+    return;
+  }
+
+  const score =
+    values[0] * 0.40 +
+    values[1] * 0.30 +
+    values[2] * 0.20 +
+    values[3] * 0.10;
+
+  let level = "Low Priority";
+  let advice = "Continue monitoring this area.";
+
+  if (score >= 70) {
+    level = "High Priority";
+    advice = "Consider investigating this area for cooling interventions.";
+  } else if (score >= 40) {
+    level = "Medium Priority";
+    advice = "Consider reviewing shade and heat conditions.";
+  }
+
+  result.innerHTML = `
+    <h3>${score.toFixed(1)} / 100</h3>
+    <p><strong>${level}</strong></p>
+    <p>${advice}</p>
+  `;
+}
+
+// TEXT REPORT DOWNLOAD
+
+function downloadFile(filename, content, type) {
+  const blob = new Blob([content], { type: type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function downloadReport() {
+  const report = `
+SHADOWROUTE PROJECT REPORT
+Urban Heat and Shade-Corridor Planner
+
+PROJECT SUMMARY
+ShadowRoute explores urban heat risk and possible shade improvements.
+
+SAMPLE DASHBOARD DATA
+Areas analysed: 5
+High-risk sample areas: 2
+Average sample temperature: 39°C
+Suggested interventions: 8
+
+SAMPLE AREA TEMPERATURES
+MG Road: 42°C
+Bus Stand: 39°C
+Benz Circle: 36°C
+Ramesh Hospital: 41°C
+Market Street: 37°C
+
+PRIORITY WEIGHTS
+Heat Risk: 40%
+Lack of Shade: 30%
+Public Usage: 20%
+Vulnerable Locations: 10%
+
+IMPORTANT DATA LIMITATION
+All values in this report are illustrative demo data.
+They are not verified measurements or official city findings.
+
+POSSIBLE INTERVENTIONS
+1. Plant suitable trees.
+2. Add shaded bus stops.
+3. Create green spaces.
+4. Improve shaded walking routes.
+`;
+
+  downloadFile("ShadowRoute_Report.txt", report, "text/plain");
+}
+
+// CSV DATA DOWNLOAD
+
+function downloadCSV() {
+  let csv = "Area,Temperature_C,Shade_Coverage_Percent\n";
+
+  for (let i = 0; i < areas.length; i++) {
+    csv += `${areas[i]},${temperatures[i]},${shadeCoverage[i]}\n`;
+  }
+
+  downloadFile("ShadowRoute_Sample_Data.csv", csv, "text/csv");
+}
+</script>
+
+</body>
+</html>
